@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cisco script with blocky</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+  <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+</head>
+<body>
+
+<canvas id="network-canvas"></canvas>
+
+<header id="app-header">
+  <div class="header-left">
+
+    <svg class="header-logo" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="14" width="34" height="14" rx="3" stroke="#00f5ff" stroke-width="1.5" fill="rgba(0,245,255,0.05)"/>
+      <rect x="8"  y="18" width="4" height="6" rx="1" fill="#00f5ff" opacity="0.7"/>
+      <rect x="14" y="18" width="4" height="6" rx="1" fill="#00f5ff" opacity="0.5"/>
+      <rect x="20" y="18" width="4" height="6" rx="1" fill="#39ff14" opacity="0.7"/>
+      <rect x="26" y="18" width="4" height="6" rx="1" fill="#00f5ff" opacity="0.4"/>
+      <circle cx="34" cy="21" r="2" fill="#39ff14">
+        <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <line x1="10" y1="14" x2="8"  y2="6"  stroke="#00f5ff" stroke-width="1" opacity="0.6"/>
+      <line x1="21" y1="14" x2="21" y2="5"  stroke="#00f5ff" stroke-width="1" opacity="0.6"/>
+      <line x1="32" y1="14" x2="34" y2="6"  stroke="#00f5ff" stroke-width="1" opacity="0.6"/>
+      <circle cx="8"  cy="5.5" r="1.5" fill="#00f5ff" opacity="0.8"/>
+      <circle cx="21" cy="4.5" r="1.5" fill="#00f5ff" opacity="0.8"/>
+      <circle cx="34" cy="5.5" r="1.5" fill="#00f5ff" opacity="0.8"/>
+      <line x1="21" y1="28" x2="21" y2="36" stroke="#00f5ff" stroke-width="1.5" opacity="0.4"/>
+      <rect x="17" y="36" width="8" height="3" rx="1" fill="rgba(0,245,255,0.2)" stroke="#00f5ff" stroke-width="1" opacity="0.6"/>
+    </svg>
+
+    <div class="header-title">
+      <h1>CISCO // NET.SCRIPT</h1>
+      <p>PACKET TRACER CONFIG GENERATOR v3.0</p>
+    </div>
+  </div>
+
+  <div class="header-status">
+    <div class="status-dot"></div>
+    <span>SYSTEM ONLINE</span>
+    &nbsp;|&nbsp;
+    <span id="packet-counter">PKT: 000000</span>
+  </div>
+</header>
+
+<div id="blockly-container">
+  <div id="blocklyDiv"></div>
+</div>
+
+<div id="toolbar">
+
+  <button class="btn-uiverse-cyan" onclick="sauvegarderWorkspace()">
+    <div class="wrapper">
+      <span>💾 SAUVEGARDER</span>
+      <div class="circle circle-12"></div><div class="circle circle-11"></div>
+      <div class="circle circle-10"></div><div class="circle circle-9"></div>
+      <div class="circle circle-8"></div><div class="circle circle-7"></div>
+      <div class="circle circle-6"></div><div class="circle circle-5"></div>
+      <div class="circle circle-4"></div><div class="circle circle-3"></div>
+      <div class="circle circle-2"></div><div class="circle circle-1"></div>
+    </div>
+  </button>
+
+  <button class="btn-uiverse-cyan" onclick="telechargerScript()">
+    <div class="wrapper">
+      <span>⬇ TÉLÉCHARGER</span>
+      <div class="circle circle-12"></div><div class="circle circle-11"></div>
+      <div class="circle circle-10"></div><div class="circle circle-9"></div>
+      <div class="circle circle-8"></div><div class="circle circle-7"></div>
+      <div class="circle circle-6"></div><div class="circle circle-5"></div>
+      <div class="circle circle-4"></div><div class="circle circle-3"></div>
+      <div class="circle circle-2"></div><div class="circle circle-1"></div>
+    </div>
+  </button>
+
+  <button class="btn-uiverse-magenta" onclick="copierLeCode()">
+    <div class="wrapper">
+      <span>📋 COPIER</span>
+      <div class="circle circle-12"></div><div class="circle circle-11"></div>
+      <div class="circle circle-10"></div><div class="circle circle-9"></div>
+      <div class="circle circle-8"></div><div class="circle circle-7"></div>
+      <div class="circle circle-6"></div><div class="circle circle-5"></div>
+      <div class="circle circle-4"></div><div class="circle circle-3"></div>
+      <div class="circle circle-2"></div><div class="circle circle-1"></div>
+    </div>
+  </button>
+
+  <button class="btn-uiverse-red" onclick="reinitialiser()">
+    <div class="wrapper">
+      <span>🗑 RESET</span>
+      <div class="circle circle-12"></div><div class="circle circle-11"></div>
+      <div class="circle circle-10"></div><div class="circle circle-9"></div>
+      <div class="circle circle-8"></div><div class="circle circle-7"></div>
+      <div class="circle circle-6"></div><div class="circle circle-5"></div>
+      <div class="circle circle-4"></div><div class="circle circle-3"></div>
+      <div class="circle circle-2"></div><div class="circle circle-1"></div>
+    </div>
+  </button>
+
+</div>
+
+<div id="templates-bar">
+  <span class="label">// TEMPLATES :</span>
+  <button class="tpl-btn" onclick="chargerTemplate('base_routeur')"><span>🔀 BASE ROUTEUR</span></button>
+  <button class="tpl-btn" onclick="chargerTemplate('base_switch')"><span>🔌 BASE SWITCH</span></button>
+  <button class="tpl-btn" onclick="chargerTemplate('ssh_complet')"><span>🔒 SSH COMPLET</span></button>
+  <button class="tpl-btn" onclick="chargerTemplate('vlan_complet')"><span>🏷 VLANs</span></button>
+  <button class="tpl-btn" onclick="chargerTemplate('dhcp_complet')"><span>📡 DHCP</span></button>
+</div>
+
+<div id="code-section">
+  <div id="code-header">
+    <div class="code-header-left">
+      <span class="code-title">// OUTPUT — CISCO IOS CLI</span>
+      <span class="live-badge">⚡ LIVE</span>
+    </div>
+    <span class="packet-counter" id="packet-counter-display"></span>
+  </div>
+  <div id="validations"></div>
+  <div id="erreurs"></div>
+  <div id="codeOutput">
+    <span style="color:var(--text-dim)">// Glisse des blocs pour générer ton script...</span>
+  </div>
+</div>
+
+<xml id="toolbox" style="display: none">
+  <category name="⚙️ Général" colour="230">
+    <block type="cisco_hostname"></block>
+    <block type="banner_motd"></block>
+    <block type="no_recherche_dns"></block>
+    <block type="save_config"></block>
+  </category>
+  <category name="🔌 Interfaces" colour="160">
+    <block type="config_ip"></block>
+    <block type="interface_range"></block>
+    <block type="descri_interface"></block>
+    <block type="shutdown"></block>
+    <block type="duplex"></block>
+    <block type="speed"></block>
+    <block type="ip_helper"></block>
+  </category>
+  <category name="🌐 Adressage" colour="1">
+    <block type="IP"></block>
+    <block type="IPv6"></block>
+    <block type="link-local"></block>
+    <block type="ip_route"></block>
+    <block type="ip_default_gateway"></block>
+  </category>
+  <category name="🔒 Sécurité" colour="330">
+    <block type="mdp_priviliegie"></block>
+    <block type="mdp_line_console"></block>
+    <block type="mdp_vty"></block>
+    <block type="service_password_encryption"></block>
+    <block type="min_mdp"></block>
+    <block type="login_block"></block>
+    <block type="exec_timeout"></block>
+    <block type="transport_ssh"></block>
+    <block type="crypto_rsa"></block>
+    <block type="ip_domain_name"></block>
+    <block type="username_local"></block>
+    <block type="login_local"></block>
+    <block type="port_security"></block>
+    <block type="port_security_max"></block>
+    <block type="port_security_violation"></block>
+    <block type="port_security_sticky"></block>
+  </category>
+  <category name="🏷️ VLAN" colour="290">
+    <block type="vlan_create"></block>
+    <block type="vlan_name"></block>
+    <block type="vlan_interface"></block>
+    <block type="switchport_access"></block>
+    <block type="switchport_trunk"></block>
+    <block type="stp_portfast"></block>
+    <block type="switchport_nonegotiate"></block>
+  </category>
+  <category name="📡 DHCP" colour="180">
+    <block type="dhcp_pool"></block>
+    <block type="dhcp_excluded"></block>
+  </category>
+  <category name="🔀 Routage dynamique" colour="20">
+    <block type="router_ospf"></block>
+    <block type="ospf_network"></block>
+    <block type="ospf_passive"></block>
+    <block type="router_rip"></block>
+    <block type="rip_network"></block>
+    <block type="ipv6_route"></block>
+    <block type="nat_inside"></block>
+    <block type="nat_outside"></block>
+    <block type="nat_static"></block>
+    <block type="ip_route_default"></block>
+  </category>
+</xml>
+
+<script src="script.js"></script>
+</body>
+</html>
