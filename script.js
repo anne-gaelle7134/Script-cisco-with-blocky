@@ -374,6 +374,11 @@ function initBlocks() {
     this.appendDummyInput().appendField("NAT statique - IP privée :").appendField(new Blockly.FieldTextInput("192.168.1.10"), "IP_PRIVEE").appendField("IP publique :").appendField(new Blockly.FieldTextInput("200.0.0.10"), "IP_PUBLIQUE");
     this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(20);
   }};
+
+  Blockly.Blocks['act_shudown'] = { init: function() {
+    this.appendDummyInput().appendField("Activer l'interface");
+    this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(160);
+  }}
 }
 function initGenerators() {
 
@@ -423,6 +428,7 @@ function initGenerators() {
   G.forBlock['nat_inside']                 = ()     => 'ip nat inside\n';
   G.forBlock['nat_outside']                = ()     => 'ip nat outside\n';
   G.forBlock['nat_static']                 = (b)    => 'ip nat inside source static ' + b.getFieldValue('IP_PRIVEE') + ' ' + b.getFieldValue('IP_PUBLIQUE') + '\n';
+  G.forBlock['act_shudown']                = ()     => 'no shutdown\n';
 
   G.forBlock['config_ip']        = (b,g) => 'interface ' + b.getFieldValue('INT_NAME') + '\n' + g.statementToCode(b,'COMMANDES') + 'exit\n';
   G.forBlock['interface_range']  = (b,g) => 'interface range ' + b.getFieldValue('INT_DEBUT') + ' - ' + b.getFieldValue('INT_FIN') + '\n' + g.statementToCode(b,'COMMANDES') + 'exit\n';
